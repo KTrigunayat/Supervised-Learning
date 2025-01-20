@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monthly Income Prediction</title>
+</head>
+<body>
+    <h1>Predict Employee Monthly Income</h1>
+    <form action="/predict" method="POST">
+        <label for="Age">Age:</label><br>
+        <input type="number" name="Age" required><br><br>
+
+        <label for="DistanceFromHome">Distance From Home:</label><br>
+        <input type="number" name="DistanceFromHome" required><br><br>
+
+        <label for="Education">Education Level:</label><br>
+        <input type="number" name="Education" required><br><br>
+
+        <label for="Gender">Gender:</label><br>
+        <input type="text" name="Gender" required><br><br>
+
+        <label for="JobLevel">Job Level:</label><br>
+        <input type="number" name="JobLevel" required><br><br>
+
+        <label for="JobRole">Job Role:</label><br>
+        <input type="text" name="JobRole" required><br><br>
+
+        <label for="MaritalStatus">Marital Status:</label><br>
+        <input type="text" name="MaritalStatus" required><br><br>
+
+        <label for="NumCompaniesWorked">Number of Companies Worked:</label><br>
+        <input type="number" name="NumCompaniesWorked" required><br><br>
+
+        <label for="OverTime">OverTime (Yes/No):</label><br>
+        <input type="text" name="OverTime" required><br><br>
+
+        <label for="TotalWorkingYears">Total Working Years:</label><br>
+        <input type="number" name="TotalWorkingYears" required><br><br>
+
+        <input type="submit" value="Predict">
+    </form>
+
+    {% if prediction %}
+        <h2>Predicted Monthly Income: {{ prediction }}</h2>
+    {% endif %}
+
+    <h2>Model R² Score: {{ r2 }}</h2>
+</body>
+</html>
