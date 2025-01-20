@@ -1,42 +1,37 @@
 import pandas as pd
 from flask import Flask, render_template, request
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import OneHotEncoder, StandardScaler
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.compose import ColumnTransformer
+from sklearn.neighbors import KNeighborsRegressor
 from sklearn.pipeline import Pipeline
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.metrics import classification_report
+from sklearn.metrics import mean_squared_error, r2_score
 
 app = Flask(__name__)
 
 # Step 1: Load and preprocess the data
-def load_and_preprocess_data():
+def load_and_preprocess_data_knn_regression():
     # Load the dataset
     data = pd.read_csv('Dataset.csv')
 
-    # Drop unwanted columns
+    # Define target variable and features
+    y = data['PercentSalaryHike']
     columns_to_exclude = [
-        'Over18', 'EmployeeNumber', 'StandardHours', 'DailyRate', 'MonthlyRate',
-        'PercentSalaryHike', 'YearsAtCompany', 'YearsWithCurrManager',
-        'EnvironmentSatisfaction', 'JobSatisfaction', 'RelationshipSatisfaction',
-        'WorkLifeBalance', 'YearsSinceLastPromotion', 'PerformanceRating', 'StockOptionLevel',
-        'HourlyRate', 'TrainingTimesLastYear', 'JobInvolvement', 'EducationField'
+        'PercentSalaryHike', 'Attrition', 'Over18', 'StandardHours', 'EmployeeNumber',
+        'DailyRate', 'EnvironmentSatisfaction', 'RelationshipSatisfaction', 'StockOptionLevel',
+        'MonthlyRate', 'BusinessTravel', 'TrainingTimesLastYear', 'Department', 'JobInvolvement',
+        'HourlyRate', 'JobSatisfaction', 'YearsSinceLastPromotion', 'EducationField', 'WorkLifeBalance'
     ]
-    X = data.drop(columns=['Attrition'] + columns_to_exclude)
-    y = data['Attrition']
-
-    # Convert the target variable to binary (Yes/No -> 1/0)
-    y = y.map({'Yes': 1, 'No': 0})
+    X = data.drop(columns=columns_to_exclude)
 
     # Identify categorical and numerical columns
     categorical_cols = X.select_dtypes(include=['object']).columns
-    numerical_cols = X.select_dtypes(include=['int64']).columns
+    numerical_cols = X.select_dtypes(include=['int64', 'float64']).columns
 
-    # Define preprocessing for numerical and categorical features
+    # Preprocessing for numerical and categorical data
     numerical_transformer = StandardScaler()
     categorical_transformer = OneHotEncoder(drop='first', sparse_output=False)
 
-    # Combine preprocessing steps
     preprocessor = ColumnTransformer(
         transformers=[
             ('num', numerical_transformer, numerical_cols),
@@ -44,31 +39,27 @@ def load_and_preprocess_data():
         ]
     )
 
-    # Create a pipeline with preprocessing and K-NN classifier
+    # Create the pipeline
     pipeline = Pipeline(steps=[
         ('preprocessor', preprocessor),
-        ('model', KNeighborsClassifier(n_neighbors=5))
+        ('model', KNeighborsRegressor(n_neighbors=5))  # Default K=5
     ])
 
     # Split data into train and test sets
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-    # Fit the pipeline on the training data
+    # Train the pipeline
     pipeline.fit(X_train, y_train)
 
-    # Evaluate the model
-    y_pred = pipeline.predict(X_test)
-    print(classification_report(y_test, y_pred))
+    return pipeline, X_test, y_test
 
-    return pipeline, X_test
-
-# Train the model and return the pipeline and test data
-pipeline, X_test = load_and_preprocess_data()
+# Train the model and get test data
+pipeline, X_test, y_test = load_and_preprocess_data_knn_regression()
 
 # Step 2: Define the API routes
 @app.route('/')
 def home():
-    return render_template('Index2.html')
+    return render_template('Index2.html')  # Input form for employee data
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -84,7 +75,12 @@ def predict():
             'MaritalStatus': request.form['MaritalStatus'],
             'NumCompaniesWorked': int(request.form['NumCompaniesWorked']),
             'OverTime': request.form['OverTime'],
-            'TotalWorkingYears': int(request.form['TotalWorkingYears'])
+            'TotalWorkingYears': int(request.form['TotalWorkingYears']),
+            'YearsAtCompany': int(request.form['YearsAtCompany']),
+            'YearsWithCurrManager': int(request.form['YearsWithCurrManager']),
+            'MonthlyIncome': float(request.form['MonthlyIncome']),
+            'YearsInCurrentRole': int(request.form['YearsInCurrentRole']),
+            'PerformanceRating': int(request.form['PerformanceRating']),
         }
 
         # Convert input to DataFrame
@@ -92,10 +88,9 @@ def predict():
 
         # Predict using the trained pipeline
         prediction = pipeline.predict(input_df)
-        prediction_text = "Yes" if prediction[0] == 1 else "No"
 
         # Return the result
-        return render_template('Index2.html', prediction=prediction_text)
+        return render_template('Index2.html', prediction=round(prediction[0], 2))
 
 if __name__ == '__main__':
     app.run(debug=True)

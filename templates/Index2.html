@@ -3,59 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Employee Attrition Prediction</title>
+    <title>Salary Hike Predictor</title>
 </head>
 <body>
-    <h1>Predict Employee Attrition</h1>
+    <h1>Predict Salary Percentage Hike</h1>
     <form action="/predict" method="POST">
         <label for="Age">Age:</label><br>
-        <input type="number" name="Age" required><br><br>
+        <input type="number" id="Age" name="Age" required><br><br>
 
         <label for="DistanceFromHome">Distance From Home:</label><br>
-        <input type="number" name="DistanceFromHome" required><br><br>
+        <input type="number" id="DistanceFromHome" name="DistanceFromHome" required><br><br>
 
         <label for="Education">Education Level:</label><br>
-        <input type="number" name="Education" required><br><br>
+        <input type="number" id="Education" name="Education" required><br><br>
 
         <label for="Gender">Gender:</label><br>
-        <input type="text" name="Gender" required><br><br>
+        <input type="text" id="Gender" name="Gender" required><br><br>
 
         <label for="JobLevel">Job Level:</label><br>
-        <input type="number" name="JobLevel" required><br><br>
+        <input type="number" id="JobLevel" name="JobLevel" required><br><br>
 
         <label for="JobRole">Job Role:</label><br>
-        <input type="text" name="JobRole" required><br><br>
+        <input type="text" id="JobRole" name="JobRole" required><br><br>
 
         <label for="MaritalStatus">Marital Status:</label><br>
-        <input type="text" name="MaritalStatus" required><br><br>
+        <input type="text" id="MaritalStatus" name="MaritalStatus" required><br><br>
 
         <label for="NumCompaniesWorked">Number of Companies Worked:</label><br>
-        <input type="number" name="NumCompaniesWorked" required><br><br>
+        <input type="number" id="NumCompaniesWorked" name="NumCompaniesWorked" required><br><br>
 
-        <label for="OverTime">OverTime (Yes/No):</label><br>
-        <input type="text" name="OverTime" required><br><br>
+        <label for="OverTime">OverTime:</label><br>
+        <input type="text" id="OverTime" name="OverTime" required><br><br>
 
         <label for="TotalWorkingYears">Total Working Years:</label><br>
-        <input type="number" name="TotalWorkingYears" required><br><br>
-        <label for="Department">Department:</label><br>
-        <input type="text" name="Department" required><br><br>
+        <input type="number" id="TotalWorkingYears" name="TotalWorkingYears" required><br><br>
 
-        <label for="YearsInCurrentRole">Years in Current Role:</label><br>
-        <input type="number" name="YearsInCurrentRole" required><br><br>
+        <label for="YearsAtCompany">Years at Company:</label><br>
+        <input type="number" id="YearsAtCompany" name="YearsAtCompany" required><br><br>
+
+        <label for="YearsWithCurrManager">Years with Current Manager:</label><br>
+        <input type="number" id="YearsWithCurrManager" name="YearsWithCurrManager" required><br><br>
 
         <label for="MonthlyIncome">Monthly Income:</label><br>
-        <input type="number" name="MonthlyIncome" required><br><br>
+        <input type="number" id="MonthlyIncome" name="MonthlyIncome" required><br><br>
 
-        <label for="BusinessTravel">Business Travel:</label><br>
-        <input type="text" name="BusinessTravel" required><br><br>
+        <label for="YearsInCurrentRole">Years in Current Role:</label><br>
+        <input type="number" id="YearsInCurrentRole" name="YearsInCurrentRole" required><br><br>
 
-        
+        <label for="PerformanceRating">Performance Rating:</label><br>
+        <input type="number" id="PerformanceRating" name="PerformanceRating" required><br><br>
 
         <input type="submit" value="Predict">
     </form>
 
     {% if prediction %}
-        <h2>Predicted Attrition: {{ prediction }}</h2>
+    <h2>Predicted Percent Salary Hike: {{ prediction }}%</h2>
     {% endif %}
 </body>
 </html>
