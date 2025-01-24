@@ -5,7 +5,8 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.compose import ColumnTransformer
 from sklearn.linear_model import LinearRegression
 from sklearn.pipeline import Pipeline
-from sklearn.metrics import r2_score
+from sklearn.metrics import r2_score, mean_squared_error
+import numpy as np  # Required for square root calculation
 
 app = Flask(__name__)
 
@@ -54,20 +55,22 @@ def load_and_preprocess_data():
     # Fit the pipeline on the training data
     pipeline.fit(X_train, y_train)
 
-    # Calculate R^2
+    # Calculate R^2 and RMSE
     y_pred = pipeline.predict(X_test)
     r2 = r2_score(y_test, y_pred)
+    rmse = np.sqrt(mean_squared_error(y_test, y_pred))
     print(f"R^2 Score: {r2:.4f}")
+    print(f"RMSE: {rmse:.4f}")
 
-    return pipeline, X_test, r2
+    return pipeline, X_test, r2, rmse
 
-# Train the model and return the pipeline, test data, and R^2 score
-pipeline, X_test, r2 = load_and_preprocess_data()
+# Train the model and return the pipeline, test data, R^2 score, and RMSE
+pipeline, X_test, r2, rmse = load_and_preprocess_data()
 
 # Step 2: Define the API routes
 @app.route('/')
 def home():
-    return render_template('index.html', r2=round(r2, 4))  # Pass R^2 to the template
+    return render_template('index.html', r2=round(r2, 4), rmse=round(rmse, 4))  # Pass R^2 and RMSE to the template
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -93,7 +96,12 @@ def predict():
         prediction = pipeline.predict(input_df)
 
         # Return the result
-        return render_template('index.html', prediction=round(prediction[0], 2), r2=round(r2, 4))
+        return render_template(
+            'index.html',
+            prediction=round(prediction[0], 2),
+            r2=round(r2, 4),
+            rmse=round(rmse, 4)
+        )
 
 if __name__ == '__main__':
     app.run(debug=True)

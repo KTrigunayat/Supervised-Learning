@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attrition Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin: 10px 0 5px;
+            font-weight: bold;
+        }
+        input, select, button {
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            background: #e7f4e4;
+            padding: 15px;
+            border: 1px solid #a4d3a1;
+            color: #2d7a2a;
+            margin-top: 15px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Attrition Prediction</h1>
+        <form action="/predict" method="POST">
+            <label for="Age">Age:</label>
+            <input type="number" name="Age" id="Age" required>
+            <label for="DistanceFromHome">Distance From Home:</label>
+            <input type="number" name="DistanceFromHome" id="DistanceFromHome" required>
+            <label for="Education">Education Level:</label>
+            <input type="number" name="Education" id="Education" required>
+            <label for="Gender">Gender:</label>
+            <select name="Gender" id="Gender" required>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+            </select>
+            <label for="JobLevel">Job Level:</label>
+            <input type="number" name="JobLevel" id="JobLevel" required>
+            <label for="JobRole">Job Role:</label>
+            <input type="text" name="JobRole" id="JobRole" required>
+            <label for="MaritalStatus">Marital Status:</label>
+            <input type="text" name="MaritalStatus" id="MaritalStatus" required>
+            <label for="NumCompaniesWorked">Number of Companies Worked:</label>
+            <input type="number" name="NumCompaniesWorked" id="NumCompaniesWorked" required>
+            <label for="OverTime">Overtime:</label>
+            <select name="OverTime" id="OverTime" required>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+            </select>
+            <label for="TotalWorkingYears">Total Working Years:</label>
+            <input type="number" name="TotalWorkingYears" id="TotalWorkingYears" required>
+            <label for="YearsAtCompany">Years at Company:</label>
+            <input type="number" name="YearsAtCompany" id="YearsAtCompany" required>
+            <label for="YearsWithCurrManager">Years with Current Manager:</label>
+            <input type="number" name="YearsWithCurrManager" id="YearsWithCurrManager" required>
+            <label for="MonthlyIncome">Monthly Income:</label>
+            <input type="number" name="MonthlyIncome" id="MonthlyIncome" required>
+            <label for="YearsInCurrentRole">Years in Current Role:</label>
+            <input type="number" name="YearsInCurrentRole" id="YearsInCurrentRole" required>
+            <label for="PerformanceRating">Performance Rating:</label>
+            <input type="number" name="PerformanceRating" id="PerformanceRating" required>
+            <label for="YearsSinceLastPromotion">Years Since Last Promotion:</label>
+            <input type="number" name="YearsSinceLastPromotion" id="YearsSinceLastPromotion" required>
+            
+            <button type="submit">Predict</button>
+        </form>
+        {% if prediction %}
+        <div class="result">
+            <p><strong>Prediction:</strong> {{ prediction }}</p>
+            <p><strong>Accuracy:</strong> {{ accuracy }}</p>
+            <p><strong>Precision:</strong> {{ precision }}</p>
+            <p><strong>Recall:</strong> {{ recall }}</p>
+            <p><strong>F1 Score:</strong> {{ f1 }}</p>
+        </div>
+        {% endif %}
+        {% if error %}
+        <div class="result" style="background-color: #f8d7da; color: #842029; border-color: #f5c6cb;">
+            <p><strong>Error:</strong> {{ error }}</p>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

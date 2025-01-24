@@ -4,47 +4,139 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Monthly Income Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f9fc;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin: 10px 0 5px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input, select {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        input[type="submit"] {
+            background-color: #007bff;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            border: none;
+            margin-top: 10px;
+            transition: background-color 0.3s ease;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        .results {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .results p {
+            font-size: 18px;
+            color: #333;
+        }
+
+        .results p span {
+            font-weight: bold;
+            color: #007bff;
+        }
+    </style>
 </head>
 <body>
-    <h1>Predict Employee Monthly Income</h1>
-    <form action="/predict" method="POST">
-        <label for="Age">Age:</label><br>
-        <input type="number" name="Age" required><br><br>
+    <div class="container">
+        <h1>Predict Employee Monthly Income</h1>
+        <form action="/predict" method="POST">
+            <label for="Age">Age:</label>
+            <input type="number" name="Age" required>
 
-        <label for="DistanceFromHome">Distance From Home:</label><br>
-        <input type="number" name="DistanceFromHome" required><br><br>
+            <label for="DistanceFromHome">Distance From Home:</label>
+            <input type="number" name="DistanceFromHome" required>
 
-        <label for="Education">Education Level:</label><br>
-        <input type="number" name="Education" required><br><br>
+            <label for="Education">Education Level:</label>
+            <input type="number" name="Education" required>
 
-        <label for="Gender">Gender:</label><br>
-        <input type="text" name="Gender" required><br><br>
+            <label for="Gender">Gender:</label>
+            <select name="Gender" required>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+            </select>
 
-        <label for="JobLevel">Job Level:</label><br>
-        <input type="number" name="JobLevel" required><br><br>
+            <label for="JobLevel">Job Level:</label>
+            <input type="number" name="JobLevel" required>
 
-        <label for="JobRole">Job Role:</label><br>
-        <input type="text" name="JobRole" required><br><br>
+            <label for="JobRole">Job Role:</label>
+            <select name="JobRole" required>
+                <option value="Sales Executive">Sales Executive</option>
+                <option value="Research Scientist">Research Scientist</option>
+                <option value="Laboratory Technician">Laboratory Technician</option>
+                <option value="Manager">Manager</option>
+                <option value="Human Resources">Human Resources</option>
+            </select>
 
-        <label for="MaritalStatus">Marital Status:</label><br>
-        <input type="text" name="MaritalStatus" required><br><br>
+            <label for="MaritalStatus">Marital Status:</label>
+            <select name="MaritalStatus" required>
+                <option value="Single">Single</option>
+                <option value="Married">Married</option>
+                <option value="Divorced">Divorced</option>
+            </select>
 
-        <label for="NumCompaniesWorked">Number of Companies Worked:</label><br>
-        <input type="number" name="NumCompaniesWorked" required><br><br>
+            <label for="NumCompaniesWorked">Number of Companies Worked:</label>
+            <input type="number" name="NumCompaniesWorked" required>
 
-        <label for="OverTime">OverTime (Yes/No):</label><br>
-        <input type="text" name="OverTime" required><br><br>
+            <label for="OverTime">OverTime:</label>
+            <select name="OverTime" required>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+            </select>
 
-        <label for="TotalWorkingYears">Total Working Years:</label><br>
-        <input type="number" name="TotalWorkingYears" required><br><br>
+            <label for="TotalWorkingYears">Total Working Years:</label>
+            <input type="number" name="TotalWorkingYears" required>
 
-        <input type="submit" value="Predict">
-    </form>
+            <input type="submit" value="Predict">
+        </form>
 
-    {% if prediction %}
-        <h2>Predicted Monthly Income: {{ prediction }}</h2>
-    {% endif %}
-
-    <h2>Model R² Score: {{ r2 }}</h2>
+        <div class="results">
+            <h1>Prediction Results</h1>
+            <p>R² Score: <span>{{ r2 }}</span></p>
+            <p>RMSE: <span>{{ rmse }}</span></p>
+            {% if prediction %}
+                <p>Predicted Monthly Income: <span>${{ prediction }}</span></p>
+            {% endif %}
+        </div>
+    </div>
 </body>
 </html>

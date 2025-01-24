@@ -3,61 +3,152 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Salary Hike Predictor</title>
+    <title>KNN Regression Predictor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #4CAF50;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin: 10px 0 5px;
+            font-weight: bold;
+        }
+        input, select, button {
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .results, .error {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .results {
+            background-color: #e7f5e6;
+            border: 1px solid #c7e1c4;
+        }
+        .error {
+            background-color: #fdecea;
+            border: 1px solid #f5c2c0;
+            color: #d9534f;
+        }
+    </style>
 </head>
 <body>
-    <h1>Predict Salary Percentage Hike</h1>
-    <form action="/predict" method="POST">
-        <label for="Age">Age:</label><br>
-        <input type="number" id="Age" name="Age" required><br><br>
+    <div class="container">
+        <h1>KNN Regression Predictor</h1>
+        <form method="POST" action="/predict">
+            <!-- Input fields -->
+            <label for="Age">Age:</label>
+            <input type="number" id="Age" name="Age" required>
 
-        <label for="DistanceFromHome">Distance From Home:</label><br>
-        <input type="number" id="DistanceFromHome" name="DistanceFromHome" required><br><br>
+            <label for="DistanceFromHome">Distance From Home:</label>
+            <input type="number" id="DistanceFromHome" name="DistanceFromHome" required>
 
-        <label for="Education">Education Level:</label><br>
-        <input type="number" id="Education" name="Education" required><br><br>
+            <label for="Education">Education:</label>
+            <input type="number" id="Education" name="Education" required>
 
-        <label for="Gender">Gender:</label><br>
-        <input type="text" id="Gender" name="Gender" required><br><br>
+            <label for="Gender">Gender:</label>
+            <select id="Gender" name="Gender" required>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+            </select>
 
-        <label for="JobLevel">Job Level:</label><br>
-        <input type="number" id="JobLevel" name="JobLevel" required><br><br>
+            <label for="JobLevel">Job Level:</label>
+            <input type="number" id="JobLevel" name="JobLevel" required>
 
-        <label for="JobRole">Job Role:</label><br>
-        <input type="text" id="JobRole" name="JobRole" required><br><br>
+            <label for="JobRole">Job Role:</label>
+            <input type="text" id="JobRole" name="JobRole" required>
 
-        <label for="MaritalStatus">Marital Status:</label><br>
-        <input type="text" id="MaritalStatus" name="MaritalStatus" required><br><br>
+            <label for="MaritalStatus">Marital Status:</label>
+            <select id="MaritalStatus" name="MaritalStatus" required>
+                <option value="Single">Single</option>
+                <option value="Married">Married</option>
+                <option value="Divorced">Divorced</option>
+            </select>
 
-        <label for="NumCompaniesWorked">Number of Companies Worked:</label><br>
-        <input type="number" id="NumCompaniesWorked" name="NumCompaniesWorked" required><br><br>
+            <label for="NumCompaniesWorked">Number of Companies Worked:</label>
+            <input type="number" id="NumCompaniesWorked" name="NumCompaniesWorked" required>
 
-        <label for="OverTime">OverTime:</label><br>
-        <input type="text" id="OverTime" name="OverTime" required><br><br>
+            <label for="OverTime">Over Time:</label>
+            <select id="OverTime" name="OverTime" required>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+            </select>
 
-        <label for="TotalWorkingYears">Total Working Years:</label><br>
-        <input type="number" id="TotalWorkingYears" name="TotalWorkingYears" required><br><br>
+            <label for="TotalWorkingYears">Total Working Years:</label>
+            <input type="number" id="TotalWorkingYears" name="TotalWorkingYears" required>
 
-        <label for="YearsAtCompany">Years at Company:</label><br>
-        <input type="number" id="YearsAtCompany" name="YearsAtCompany" required><br><br>
+            <label for="YearsAtCompany">Years at Company:</label>
+            <input type="number" id="YearsAtCompany" name="YearsAtCompany" required>
 
-        <label for="YearsWithCurrManager">Years with Current Manager:</label><br>
-        <input type="number" id="YearsWithCurrManager" name="YearsWithCurrManager" required><br><br>
+            <label for="YearsWithCurrManager">Years with Current Manager:</label>
+            <input type="number" id="YearsWithCurrManager" name="YearsWithCurrManager" required>
 
-        <label for="MonthlyIncome">Monthly Income:</label><br>
-        <input type="number" id="MonthlyIncome" name="MonthlyIncome" required><br><br>
+            <label for="MonthlyIncome">Monthly Income:</label>
+            <input type="number" id="MonthlyIncome" name="MonthlyIncome" step="0.01" required>
 
-        <label for="YearsInCurrentRole">Years in Current Role:</label><br>
-        <input type="number" id="YearsInCurrentRole" name="YearsInCurrentRole" required><br><br>
+            <label for="YearsInCurrentRole">Years in Current Role:</label>
+            <input type="number" id="YearsInCurrentRole" name="YearsInCurrentRole" required>
 
-        <label for="PerformanceRating">Performance Rating:</label><br>
-        <input type="number" id="PerformanceRating" name="PerformanceRating" required><br><br>
+            <label for="PerformanceRating">Performance Rating:</label>
+            <input type="number" id="PerformanceRating" name="PerformanceRating" required>
 
-        <input type="submit" value="Predict">
-    </form>
+            <label for="YearsSinceLastPromotion">Years Since Last Promotion:</label>
+            <input type="number" id="YearsSinceLastPromotion" name="YearsSinceLastPromotion" required>
 
-    {% if prediction %}
-    <h2>Predicted Percent Salary Hike: {{ prediction }}%</h2>
-    {% endif %}
+            <label for="Department">Department:</label>
+            <input type="text" id="Department" name="Department" required>
+
+            <label for="EducationField">Education Field:</label>
+            <input type="text" id="EducationField" name="EducationField" required>
+
+
+            <button type="submit">Predict</button>
+        </form>
+
+        <!-- Results Section -->
+        {% if prediction %}
+        <div class="results">
+            <p><strong>Predicted Salary Hike:</strong> {{ prediction }}%</p>
+            <p><strong>R² Score:</strong> {{ r2 }}</p>
+            <p><strong>RMSE:</strong> {{ rmse }}</p>
+        </div>
+        {% elif error %}
+        <div class="error">
+            <p><strong>Error:</strong> {{ error }}</p>
+        </div>
+        {% endif %}
+    </div>
 </body>
 </html>

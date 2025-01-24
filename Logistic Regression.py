@@ -1,29 +1,30 @@
 import pandas as pd
 from flask import Flask, render_template, request
 from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import f1_score, recall_score, precision_score, accuracy_score
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.compose import ColumnTransformer
-from sklearn.neighbors import KNeighborsRegressor
 from sklearn.pipeline import Pipeline
-from sklearn.metrics import mean_squared_error, r2_score
 import numpy as np
 
 app = Flask(__name__)
 
 # Step 1: Load and preprocess the data
-def load_and_preprocess_data_knn_regression():
+def load_and_preprocess_data_logistic_regression():
     # Load the dataset
     data = pd.read_csv('Dataset.csv')
 
     # Define target variable and features
-    y = data['PercentSalaryHike']
+    y = data['Attrition'].map({'Yes': 1, 'No': 0})  # Convert Attrition to binary
     columns_to_exclude = [
-        'PercentSalaryHike', 'Attrition', 'Over18', 'StandardHours', 'EmployeeNumber',
-        'DailyRate', 'HourlyRate', 'JobSatisfaction', 'EnvironmentSatisfaction', 'JobInvolvement',
-        'RelationshipSatisfaction', 'StockOptionLevel', 'TrainingTimesLastYear', 'WorkLifeBalance','BusinessTravel','MonthlyRate'
+        'Attrition', 'Over18', 'StandardHours', 'EmployeeNumber', 'DailyRate', 'HourlyRate',
+        'MonthlyRate', 'JobSatisfaction', 'EnvironmentSatisfaction', 'RelationshipSatisfaction',
+        'EducationField', 'StockOptionLevel', 'WorkLifeBalance', 'Department',
+        'PercentSalaryHike', 'TrainingTimesLastYear', 'BusinessTravel', 'JobInvolvement'
     ]
     X = data.drop(columns=columns_to_exclude)
-#  columns are missing: {'BusinessTravel', 'Department', 'EducationField', 'MonthlyRate'}
+
     # Identify categorical and numerical columns
     categorical_cols = X.select_dtypes(include=['object']).columns
     numerical_cols = X.select_dtypes(include=['int64', 'float64']).columns
@@ -39,10 +40,17 @@ def load_and_preprocess_data_knn_regression():
         ]
     )
 
+    # Define the Logistic Regression model
+    model = LogisticRegression(
+        random_state=42,
+        max_iter=1000,  # Ensure convergence
+        solver='liblinear'  # Suitable for smaller datasets and binary classification
+    )
+
     # Create the pipeline
     pipeline = Pipeline(steps=[
         ('preprocessor', preprocessor),
-        ('model', KNeighborsRegressor(10))
+        ('model', model)
     ])
 
     # Split data into train and test sets
@@ -51,15 +59,15 @@ def load_and_preprocess_data_knn_regression():
     # Train the pipeline
     pipeline.fit(X_train, y_train)
 
-    return pipeline, X_test, y_test
+    return pipeline, X_test, y_test, y_train
 
 # Train the model and get test data
-pipeline, X_test, y_test = load_and_preprocess_data_knn_regression()
+pipeline, X_test, y_test, y_train = load_and_preprocess_data_logistic_regression()
 
 # Step 2: Define the API routes
 @app.route('/')
 def home():
-    return render_template('Index2.html')  # Input form for employee data
+    return render_template('Index3.html')  # Input form for employee data
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -82,29 +90,36 @@ def predict():
                 'MonthlyIncome': float(request.form.get('MonthlyIncome', 0.0)),
                 'YearsInCurrentRole': int(request.form.get('YearsInCurrentRole', 0)),
                 'PerformanceRating': int(request.form.get('PerformanceRating', 0)),
-                'YearsSinceLastPromotion': int(request.form.get('YearsSinceLastPromotion', 0)),
-                'Department': request.form.get('Department',0),
-                'EducationField': request.form.get('EducationField',0)            }
+                'YearsSinceLastPromotion': int(request.form.get('YearsSinceLastPromotion', 0))
+            }
 
             # Convert input to DataFrame
             input_df = pd.DataFrame([form_data])
 
             # Predict using the trained pipeline
             prediction = pipeline.predict(input_df)
+            prediction_text = 'Yes' if prediction[0] == 1 else 'No'
 
-            # Calculate R² and RMSE for test data
+            # Calculate evaluation metrics for the model
             y_pred = pipeline.predict(X_test)
-            r2 = r2_score(y_test, y_pred)
-            mse = mean_squared_error(y_test, y_pred)  # Calculate MSE
-            rmse = np.sqrt(mse)  # Take the square root to get RMSE
+            accuracy = accuracy_score(y_test, y_pred)
+            precision = precision_score(y_test, y_pred)
+            recall = recall_score(y_test, y_pred)
+            f1 = f1_score(y_test, y_pred)
 
             # Return the result to the template
-            return render_template('Index2.html', prediction=round(prediction[0], 2), r2=round(r2, 4), rmse=round(rmse, 2))
+            return render_template(
+                'Index3.html',
+                prediction=prediction_text,
+                accuracy=round(accuracy, 4),
+                precision=round(precision, 4),
+                recall=round(recall, 4),
+                f1=round(f1, 4)
+            )
 
         except Exception as e:
             # Handle exceptions and return error message
-            return render_template('Index2.html', error=str(e))
-
+            return render_template('Index3.html', error=str(e))
 
 if __name__ == '__main__':
     app.run(debug=True)
